@@ -1,13 +1,16 @@
 /** @jsx h */
 import { h, JSX, render, tw, useEffect, useState } from "./deps.ts";
-import { Footer, ItemList } from "./components/mod.ts";
+import { Footer, ItemList, ShareButton } from "./components/mod.ts";
 
 import type { AngoliaResponse, New } from "./types.ts";
 
 function App() {
+  const params = new URLSearchParams(window.location.search);
+  const searchQuery = params.get("q") ?? "deno";
+
   const [data, setData] = useState<New[]>([]);
-  const [query, setQuery] = useState("deno");
-  const [search, setSearch] = useState("deno");
+  const [query, setQuery] = useState(searchQuery);
+  const [search, setSearch] = useState(searchQuery);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -73,6 +76,7 @@ function App() {
       {isError && <div>Something went wrong ...</div>}
 
       {isLoading ? <div>Loading...</div> : <ItemList items={data} />}
+      <ShareButton />
       <Footer />
     </main>
   );
