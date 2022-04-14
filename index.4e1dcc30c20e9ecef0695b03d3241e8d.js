@@ -948,6 +948,18 @@
     }, "Source Code"));
   }
 
+  // deno:file:///home/runner/work/ultinews/ultinews/src/components/Button.tsx
+  function ShareButton() {
+    const onClick = () => {
+      navigator.clipboard.writeText(window.location.href);
+      alert("Copied to clipboard!");
+    };
+    return /* @__PURE__ */ Z("button", {
+      onClick,
+      className: Yt`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded`
+    }, "Share");
+  }
+
   // deno:file:///home/runner/work/ultinews/ultinews/src/components/NewItem.tsx
   function NewItem({ item }) {
     return /* @__PURE__ */ Z("li", {
@@ -979,9 +991,11 @@
 
   // deno:file:///home/runner/work/ultinews/ultinews/src/app.tsx
   function App() {
+    const params = new URLSearchParams(window.location.search);
+    const searchQuery = params.get("q") ?? "deno";
     const [data, setData] = F2([]);
-    const [query, setQuery] = F2("deno");
-    const [search, setSearch] = F2("deno");
+    const [query, setQuery] = F2(searchQuery);
+    const [search, setSearch] = F2(searchQuery);
     const [isLoading, setIsLoading] = F2(false);
     const [isError, setIsError] = F2(false);
     T2(() => {
@@ -1029,7 +1043,7 @@
       onClick: () => setSearch(query)
     }, "Go")), isError && /* @__PURE__ */ Z("div", null, "Something went wrong ..."), isLoading ? /* @__PURE__ */ Z("div", null, "Loading...") : /* @__PURE__ */ Z(ItemList, {
       items: data
-    }), /* @__PURE__ */ Z(Footer, null));
+    }), /* @__PURE__ */ Z(ShareButton, null), /* @__PURE__ */ Z(Footer, null));
   }
   oe(/* @__PURE__ */ Z(App, null), document.getElementById("root"));
 })();
