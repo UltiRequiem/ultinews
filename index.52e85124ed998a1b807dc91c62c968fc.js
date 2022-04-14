@@ -948,6 +948,26 @@
     }, "Source Code"));
   }
 
+  // deno:file:///home/runner/work/ultinews/ultinews/src/components/NewItem.tsx
+  function NewItem({ item }) {
+    return /* @__PURE__ */ Z("li", {
+      key: item.objectID,
+      class: Yt`bg-indigo-300 p-2 m-4 hover:shadow-md rounded`
+    }, /* @__PURE__ */ Z("a", {
+      class: Yt`text-lg font-bold hover:text-blue-700`,
+      href: item.url
+    }, item.title), /* @__PURE__ */ Z("p", null, "At ", new Date(item.created_at).toLocaleString()), /* @__PURE__ */ Z("p", {
+      class: Yt`italic`
+    }, "By", " ", /* @__PURE__ */ Z("a", {
+      href: `https://news.ycombinator.com/user?id=${item.author}`,
+      class: Yt`font-bold hover:text-blue-700`
+    }, "@", item.author), " ", "| ", /* @__PURE__ */ Z("span", {
+      class: Yt`text-green-900`
+    }, "Points: ", item.points), " |", " ", /* @__PURE__ */ Z("span", {
+      class: Yt`text-indigo-700`
+    }, "Comments: ", item.num_comments)));
+  }
+
   // deno:file:///home/runner/work/ultinews/ultinews/src/components/NewList.tsx
   function ItemList({ items }) {
     return /* @__PURE__ */ Z("ul", {
