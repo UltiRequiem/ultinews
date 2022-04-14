@@ -3,6 +3,8 @@
 import { h, tw } from "../deps.ts";
 import type { New } from "../types.ts";
 
+import { NewItem } from "./NewItem.tsx";
+
 export function ItemList({ items }: { items: New[] }) {
   return (
     <ul class={tw`bg-indigo-400 rounded-lg p-4 m-3 min-w-[80%]`}>

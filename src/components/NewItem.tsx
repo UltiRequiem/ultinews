@@ -12,7 +12,7 @@ export function NewItem({ item }: { item: New }) {
       <a class={tw`text-lg font-bold hover:text-blue-700`} href={item.url}>
         {item.title}
       </a>
-      <p>{new Date(item.created_at).toLocaleString()}</p>
+      <p>At {new Date(item.created_at).toLocaleString()}</p>
       <p class={tw`italic`}>
         By{" "}
         <a
