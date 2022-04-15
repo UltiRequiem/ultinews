@@ -1,5 +1,13 @@
 /** @jsx h */
-import { h, JSX, render, tw, useEffect, useState } from "./deps.ts";
+import {
+  h,
+  JSX,
+  render,
+  setIntervalX,
+  tw,
+  useEffect,
+  useState,
+} from "./deps.ts";
 import { Footer, ItemList, ShareButton } from "./components/mod.ts";
 
 import type { AngoliaResponse, New } from "./types.ts";
@@ -8,7 +16,7 @@ function App() {
   const params = new URLSearchParams(window.location.search);
   const searchQuery = params.get("q") ?? "deno";
 
-  const [data, setData] = useState<New[]>([]);
+  const [news, setNews] = useState<New[]>([]);
   const [query, setQuery] = useState(searchQuery);
   const [search, setSearch] = useState(searchQuery);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,34 +29,73 @@ function App() {
 
       const API_URL = `https://hn.algolia.com/api/v1/search?query=${search}`;
 
+      let interval: number;
+
+      const originalResponse = await fetch(API_URL);
+
+      const { nbPages } = (await originalResponse.json()) as AngoliaResponse;
+
       try {
-        const result = await fetch(API_URL);
+        let page = 0;
 
-        if (!result.ok) {
-          throw new Error(result.statusText);
-        }
+        interval = setIntervalX(
+          async () => {
+            const API_URL_PAGE = `${API_URL}&page=${page}`;
+            const response = await fetch(API_URL_PAGE);
 
-        const data = (await result.json()) as AngoliaResponse;
-        const parsedData = data.hits.filter((item) => item.url);
+            if (!response.ok) {
+              throw new Error(response.statusText);
+            }
 
-        setData(parsedData);
+            page++;
+
+            const result = (await response.json()) as AngoliaResponse;
+
+            if (result.hits.length === 0) {
+              return clearInterval(interval);
+            }
+
+            const parsedData = result.hits.filter((item) => item.url);
+
+            setNews((prevData) => [...prevData, ...parsedData]);
+          },
+          1000,
+          nbPages,
+        );
       } catch (error) {
         setIsError(true);
       }
 
       setIsLoading(false);
+
+      return () => clearInterval(interval);
     };
 
     fetchData();
   }, [search]);
 
   const handleInput = (event: JSX.TargetedEvent<HTMLInputElement>) => {
+    event.preventDefault();
+
     setQuery(event.currentTarget.value);
+
+    document.title = `UltiNews | ${query}`;
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    urlParams.set("q", query);
+
+    window.history.replaceState(
+      {},
+      document.title,
+      `${window.location.pathname}?${urlParams.toString()}`,
+    );
   };
 
   const onSubmit = (event: JSX.TargetedEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSearch(query);
+    window.location.replace(`/?q=${query}`);
   };
 
   return (
@@ -75,7 +122,7 @@ function App() {
       </form>
       {isError && <div>Something went wrong ...</div>}
 
-      {isLoading ? <div>Loading...</div> : <ItemList items={data} />}
+      {isLoading ? <div>Loading...</div> : <ItemList items={news} />}
       <ShareButton />
       <Footer />
     </main>

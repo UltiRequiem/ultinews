@@ -10,4 +10,5 @@ export interface New {
 
 export interface AngoliaResponse {
   hits: New[];
+  nbPages: number;
 }
