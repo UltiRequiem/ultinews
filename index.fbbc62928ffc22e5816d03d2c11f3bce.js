@@ -278,6 +278,18 @@
     this.__v && (this.__e = true, t2 && this.__h.push(t2), L(this));
   }, E.prototype.render = N, x = [], R = typeof Promise == "function" ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, D.__r = 0, B = 0;
 
+  // deno:https://deno.land/x/six@v1.0.0/mod.ts
+  function setIntervalX(callback, delay, repetitions, ...args) {
+    let x3 = 0;
+    const intervalID = setInterval(() => {
+      callback(...args);
+      if (++x3 === repetitions) {
+        clearInterval(intervalID);
+      }
+    }, delay);
+    return intervalID;
+  }
+
   // deno:https://cdn.esm.sh/v77/preact@10.7.1/deno/hooks.js
   var c;
   var e;
@@ -993,7 +1005,7 @@
   function App() {
     const params = new URLSearchParams(window.location.search);
     const searchQuery = params.get("q") ?? "deno";
-    const [data, setData] = F2([]);
+    const [news, setNews] = F2([]);
     const [query, setQuery] = F2(searchQuery);
     const [search, setSearch] = F2(searchQuery);
     const [isLoading, setIsLoading] = F2(false);
@@ -1003,27 +1015,45 @@
         setIsLoading(true);
         setIsError(false);
         const API_URL = `https://hn.algolia.com/api/v1/search?query=${search}`;
+        let interval;
+        const originalResponse = await fetch(API_URL);
+        const { nbPages } = await originalResponse.json();
         try {
-          const result = await fetch(API_URL);
-          if (!result.ok) {
-            throw new Error(result.statusText);
-          }
-          const data2 = await result.json();
-          const parsedData = data2.hits.filter((item) => item.url);
-          setData(parsedData);
+          let page = 0;
+          interval = setIntervalX(async () => {
+            const API_URL_PAGE = `${API_URL}&page=${page}`;
+            const response = await fetch(API_URL_PAGE);
+            if (!response.ok) {
+              throw new Error(response.statusText);
+            }
+            page++;
+            const result = await response.json();
+            if (result.hits.length === 0) {
+              return clearInterval(interval);
+            }
+            const parsedData = result.hits.filter((item) => item.url);
+            setNews((prevData) => [...prevData, ...parsedData]);
+          }, 1e3, nbPages);
         } catch (error) {
           setIsError(true);
         }
         setIsLoading(false);
+        return () => clearInterval(interval);
       };
       fetchData();
     }, [search]);
     const handleInput = (event) => {
+      event.preventDefault();
       setQuery(event.currentTarget.value);
+      document.title = `UltiNews | ${query}`;
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set("q", query);
+      window.history.replaceState({}, document.title, `${window.location.pathname}?${urlParams.toString()}`);
     };
     const onSubmit = (event) => {
       event.preventDefault();
       setSearch(query);
+      window.location.replace(`/?q=${query}`);
     };
     return /* @__PURE__ */ Z("main", {
       class: Yt`min-h-screen bg-indigo-300 flex flex-col items-center`
@@ -1042,7 +1072,7 @@
       type: "submit",
       onClick: () => setSearch(query)
     }, "Go")), isError && /* @__PURE__ */ Z("div", null, "Something went wrong ..."), isLoading ? /* @__PURE__ */ Z("div", null, "Loading...") : /* @__PURE__ */ Z(ItemList, {
-      items: data
+      items: news
     }), /* @__PURE__ */ Z(ShareButton, null), /* @__PURE__ */ Z(Footer, null));
   }
   oe(/* @__PURE__ */ Z(App, null), document.getElementById("root"));
