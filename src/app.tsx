@@ -88,7 +88,7 @@ function App() {
     window.history.replaceState(
       {},
       document.title,
-      `${window.location.pathname}?${urlParams.toString()}`,
+      `${window.location.pathname}/ultinews/?${urlParams.toString()}`,
     );
   };
 
