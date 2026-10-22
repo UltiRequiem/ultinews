@@ -11,8 +11,7 @@ export function ShareButton() {
   return (
     <button
       onClick={onClick}
-      className={tw
-        `bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded`}
+      className={tw`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded`}
     >
       Share
     </button>

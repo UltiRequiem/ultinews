@@ -77,25 +77,32 @@ function App() {
   const handleInput = (event: JSX.TargetedEvent<HTMLInputElement>) => {
     event.preventDefault();
 
-    setQuery(event.currentTarget.value);
+    const nextQuery = event.currentTarget.value;
+    setQuery(nextQuery);
 
-    document.title = `UltiNews | ${query}`;
+    document.title = `UltiNews | ${nextQuery}`;
 
-    const urlParams = new URLSearchParams(window.location.search);
-
-    urlParams.set("q", query);
+    const url = new URL(window.location.href);
+    url.searchParams.set("q", nextQuery);
 
     window.history.replaceState(
       {},
       document.title,
-      `${window.location.pathname}/ultinews/?${urlParams.toString()}`,
+      `${url.pathname}${url.search}${url.hash}`,
     );
   };
 
   const onSubmit = (event: JSX.TargetedEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSearch(query);
-    window.location.replace(`/?q=${query}`);
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("q", query);
+    window.history.replaceState(
+      {},
+      `UltiNews | ${query}`,
+      `${url.pathname}${url.search}${url.hash}`,
+    );
   };
 
   return (
@@ -111,8 +118,7 @@ function App() {
           />
         </label>
         <button
-          class={tw
-            `focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800`}
+          class={tw`focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800`}
           type="submit"
           onClick={() =>
             setSearch(query)}
