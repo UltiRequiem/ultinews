@@ -16,14 +16,14 @@ A Hacker News Searcher UI 💄
 - 💪 [TypeScript](https://typescriptlang.org): JavaScript with Types
 
 - 🤖
-  [Continuos Integration and Deployment](https://github.com/UltiRequiem/ultinewg/actions):
+  [Continuous Integration and Deployment](https://github.com/UltiRequiem/ultinews/actions):
   For fast and safe development
 
 ## Deploy
 
 ### GH Pages 🐱
 
-https://news.ultirequiem.com
+https://ulti.js.org/ultinews/
 
 ## Support
 

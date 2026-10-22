@@ -3,7 +3,7 @@
     "lib": ["dom", "esnext"]
   },
   "tasks": {
-    "dev": "packup src/index.html",
-    "build": "packup build src/index.html"
+    "dev": "deno run -A https://raw.githubusercontent.com/kt3k/packup/3bc9e72d6015069d71bb3d6331d177c5e07d0c96/cli.ts src/index.html",
+    "build": "deno run -A https://raw.githubusercontent.com/kt3k/packup/3bc9e72d6015069d71bb3d6331d177c5e07d0c96/cli.ts build src/index.html"
   }
 }
